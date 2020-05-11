@@ -4,8 +4,8 @@ import request from 'supertest'
 import { getConnection } from 'typeorm'
 import { AppModule } from '../src/app'
 import { AuthService } from '../src/auth'
-import { usersMock } from '../src/users/test/users.mock'
 import { UsersService } from '../src/users'
+import { usersMock } from '../src/users/test'
 
 describe('Auth Module (e2e)', () => {
   let app: INestApplication

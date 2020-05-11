@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
 import bcrypt from 'bcrypt'
-import { RegisterInput } from '../app'
+import { FindConditions, In, Repository } from 'typeorm'
+import { RegisterInput } from '../app/generated'
 import UserEntity from './user.entity'
 
 @Injectable()
@@ -18,8 +18,18 @@ export default class UsersService {
     )
   }
 
-  findOne(where: { id?: number; email?: string }) {
+  async findOne(where: { id?: number; email?: string }) {
     return this.userRepository.findOne(where)
+  }
+
+  async find({ userIds }: { userIds?: number[] } = {}) {
+    const where: FindConditions<UserEntity> = {}
+
+    if (userIds) {
+      where.id = In(userIds)
+    }
+
+    return this.userRepository.find({ where })
   }
 
   async comparePasswords(password, hash) {

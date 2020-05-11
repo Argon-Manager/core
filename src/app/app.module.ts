@@ -3,6 +3,7 @@ import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthModule } from '../auth'
+import { ProjectsModule } from '../projects'
 import { UsersModule } from '../users'
 
 @Module({
@@ -30,6 +31,7 @@ import { UsersModule } from '../users'
     }),
     AuthModule,
     UsersModule,
+    ProjectsModule,
   ],
 })
 export default class AppModule {}
