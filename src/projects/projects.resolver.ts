@@ -13,7 +13,10 @@ export default class ProjectsResolver {
   @Mutation()
   @UseGuards(AuthGuard)
   async createProject(@AuthUser() user: UserEntity, @Args('input') input: ProjectInput) {
-    return this.projectsService.create({ ...input, userIds: [user.id, ...(input.userIds ?? [])] })
+    return this.projectsService.create({
+      ...input,
+      userIds: [user.id, ...(input.userIds?.map((id) => parseInt(id)) ?? [])],
+    })
   }
 
   @ResolveField()
