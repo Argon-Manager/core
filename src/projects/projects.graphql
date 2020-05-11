@@ -12,4 +12,5 @@ type Project {
 input ProjectInput {
   name: String!
   description: String
+  userIds: [ID!]
 }

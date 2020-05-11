@@ -3,6 +3,7 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { getConnection } from 'typeorm'
 import { AppModule } from '../src/app'
+import { ProjectInput } from '../src/app/generated'
 import { AuthService } from '../src/auth'
 import { projectsMock } from '../src/projects/test'
 import { UsersService } from '../src/users'
@@ -41,15 +42,16 @@ describe('Project (e2e)', () => {
 
   test('createProject: return new project', async () => {
     const user = await usersService.create(usersMock[0])
+    const userFriend = await usersService.create(usersMock[1])
     const token = authService.createToken(user.id)
 
-    const [projectData] = projectsMock
+    const projectInput: ProjectInput = { ...projectsMock[0], userIds: [userFriend.id.toString()] }
 
     const { body } = await request(app.getHttpServer())
       .post('/')
       .set({ Authorization: `Bearer ${token}` })
       .send({
-        variables: { input: projectData },
+        variables: { input: projectInput },
         query: `
           mutation CreateProject($input: ProjectInput!) {
             createProject(input: $input) {
@@ -69,9 +71,12 @@ describe('Project (e2e)', () => {
     expect(body.data.createProject).toBeDefined()
     expect(body.data.createProject).toEqual({
       id: expect.any(String),
-      name: projectData.name,
-      description: projectData.description,
-      users: [{ id: user.id.toString(), email: user.email }],
+      name: projectInput.name,
+      description: projectInput.description,
+      users: [
+        { id: user.id.toString(), email: user.email },
+        { id: userFriend.id.toString(), email: userFriend.email },
+      ],
     })
   })
 })

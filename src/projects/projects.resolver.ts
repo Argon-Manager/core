@@ -1,5 +1,5 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, Parent, ResolveField, Resolver, Root } from '@nestjs/graphql'
+import { Args, Mutation, Parent, ResolveField, Resolver } from '@nestjs/graphql'
 import { ProjectInput } from '../app/generated'
 import { AuthGuard, AuthUser } from '../auth'
 import UserEntity from '../users/user.entity'
@@ -13,7 +13,7 @@ export default class ProjectsResolver {
   @Mutation()
   @UseGuards(AuthGuard)
   async createProject(@AuthUser() user: UserEntity, @Args('input') input: ProjectInput) {
-    return this.projectsService.create({ ...input, userIds: [user.id] })
+    return this.projectsService.create({ ...input, userIds: [user.id, ...(input.userIds ?? [])] })
   }
 
   @ResolveField()

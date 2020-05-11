@@ -64,6 +64,7 @@ export type Project = {
 export type ProjectInput = {
   name: Scalars['String'];
   description?: Maybe<Scalars['String']>;
+  userIds?: Maybe<Array<Scalars['ID']>>;
 };
 
 export type User = {
