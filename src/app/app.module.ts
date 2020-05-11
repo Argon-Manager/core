@@ -2,8 +2,8 @@ import { Module } from '@nestjs/common'
 import { ConfigModule, ConfigService } from '@nestjs/config'
 import { GraphQLModule } from '@nestjs/graphql'
 import { TypeOrmModule } from '@nestjs/typeorm'
-import { PostgresConnectionOptions } from 'typeorm/driver/postgres/PostgresConnectionOptions'
 import { AuthModule } from '../auth'
+import { UsersModule } from '../users'
 
 @Module({
   imports: [
@@ -12,10 +12,11 @@ import { AuthModule } from '../auth'
       imports: [ConfigModule],
       inject: [ConfigService],
       useFactory: (configService: ConfigService) => ({
-        path: "/",
-        playground: configService.get('NODE_ENV') !== "production",
+        path: '/',
+        playground: configService.get('NODE_ENV') !== 'production',
+        watch: configService.get('NODE_ENV') !== 'production',
         typePaths: ['./**/*.graphql'],
-      })
+      }),
     }),
     TypeOrmModule.forRootAsync({
       imports: [ConfigModule],
@@ -24,10 +25,11 @@ import { AuthModule } from '../auth'
         type: 'postgres',
         url: configService.get('PG_URL'),
         synchronize: true,
-        autoLoadEntities: true
-      })
+        autoLoadEntities: true,
+      }),
     }),
-    AuthModule
+    AuthModule,
+    UsersModule,
   ],
 })
-export class AppModule {}
+export default class AppModule {}

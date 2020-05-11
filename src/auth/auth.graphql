@@ -1,3 +1,23 @@
 type Query {
-  me: String
+  me: User
+}
+
+type Mutation {
+  register(input: RegisterInput!): Auth!
+  login(input: LoginInput!): Auth
+}
+
+type Auth {
+  user: User!
+  token: String!
+}
+
+input RegisterInput {
+  email: String!
+  password: String!
+}
+
+input LoginInput {
+  email: String!
+  password: String!
 }
