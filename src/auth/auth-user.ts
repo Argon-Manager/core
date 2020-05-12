@@ -1,6 +1,6 @@
 import { createParamDecorator } from '@nestjs/common'
 
-const AuthUser = createParamDecorator((data: unknown, [_, __, ctx]) => {
+const AuthUser = createParamDecorator((data: unknown, [, , ctx]) => {
   return ctx.req.authUser
 })
 

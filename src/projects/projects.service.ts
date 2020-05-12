@@ -24,6 +24,24 @@ export default class ProjectsService {
     return project
   }
 
+  async findById(id: number) {
+    return this.projectRepository.findOne({ id })
+  }
+
+  async updateById(
+    id: number,
+    { userIds, ...data }: Omit<ProjectInput, 'userIds'> & { userIds?: number[] }
+  ) {
+    const project = await this.projectRepository.save(
+      this.projectRepository.create({ id, ...data })
+    )
+
+    await this.projectToUserRepository.delete({ projectId: id })
+    await this.addUsersToProject({ userIds, projectId: id })
+
+    return project
+  }
+
   async addUsersToProject({ userIds, projectId }: { userIds: number[]; projectId: number }) {
     // TODO: replace by batch insert
     return this.projectToUserRepository.save(
@@ -39,6 +57,7 @@ export default class ProjectsService {
   async getProjectUsers({ projectId }: { projectId: number }) {
     const projectsToUsers = await this.projectToUserRepository.find({ where: { projectId } })
     const userIds = projectsToUsers.map(({ userId }) => userId)
+
     return this.usersService.find({ userIds })
   }
 }
