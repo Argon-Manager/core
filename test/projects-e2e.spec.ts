@@ -51,11 +51,11 @@ describe('Project (e2e)', () => {
   test('createProject: return new project', async () => {
     const user = await usersService.create(usersMock[0])
     const friend = await usersService.create(usersMock[1])
-    const token = authService.createToken(user.id)
 
     const projectInput: ProjectInput = { ...projectsMock[0], userIds: [friend.id.toString()] }
     const variables: MutationCreateProjectArgs = { input: projectInput }
 
+    const token = authService.createToken(user.id)
     const { body } = await request(app.getHttpServer())
       .post('/')
       .set({ Authorization: `Bearer ${token}` })
@@ -92,13 +92,13 @@ describe('Project (e2e)', () => {
   test('updateProject: return updated project', async () => {
     const user = await usersService.create(usersMock[0])
     const friend = await usersService.create(usersMock[1])
-    const token = authService.createToken(user.id)
 
     const project = await projectsService.create({ ...projectsMock[0], userIds: [user.id] })
 
     const projectInput: ProjectInput = { ...projectsMock[1], userIds: [friend.id.toString()] }
     const variables: MutationUpdateProjectArgs = { id: project.id.toString(), input: projectInput }
 
+    const token = authService.createToken(user.id)
     const { body } = await request(app.getHttpServer())
       .post('/')
       .set({ Authorization: `Bearer ${token}` })
@@ -134,7 +134,6 @@ describe('Project (e2e)', () => {
 
   test('project: return project', async () => {
     const user = await usersService.create(usersMock[0])
-    const token = authService.createToken(user.id)
     const project = await projectsService.create({
       ...projectsMock[0],
       userIds: [user.id],
@@ -142,6 +141,7 @@ describe('Project (e2e)', () => {
 
     const variables: QueryProjectArgs = { id: project.id.toString() }
 
+    const token = authService.createToken(user.id)
     const { body } = await request(app.getHttpServer())
       .post('/')
       .set({ Authorization: `Bearer ${token}` })
@@ -180,10 +180,10 @@ describe('Project (e2e)', () => {
     })
 
     const notTeamUser = await usersService.create(usersMock[1])
-    const token = authService.createToken(notTeamUser.id)
 
     const variables: QueryProjectArgs = { id: project.id.toString() }
 
+    const token = authService.createToken(notTeamUser.id)
     const { body } = await request(app.getHttpServer())
       .post('/')
       .set({ Authorization: `Bearer ${token}` })
@@ -206,5 +206,50 @@ describe('Project (e2e)', () => {
 
     expect(body.errors).toBeUndefined()
     expect(body.data.project).toEqual(null)
+  })
+
+  test('projects: return projects by auth user', async () => {
+    const authUser = await usersService.create(usersMock[0])
+    const project = await projectsService.create({
+      ...projectsMock[0],
+      userIds: [authUser.id],
+    })
+
+    const user = await usersService.create(usersMock[1])
+    await projectsService.create({
+      ...projectsMock[1],
+      userIds: [user.id],
+    })
+
+    const token = authService.createToken(authUser.id)
+    const { body } = await request(app.getHttpServer())
+      .post('/')
+      .set({ Authorization: `Bearer ${token}` })
+      .send({
+        query: `
+          query Projects {
+            projects {
+              id
+              name
+              description
+              users {
+                id
+                email
+              }
+            }
+          }
+        `,
+      })
+
+    expect(body.errors).toBeUndefined()
+    expect(body.data.projects).toBeDefined()
+    expect(body.data.projects).toEqual([
+      {
+        id: project.id.toString(),
+        name: project.name,
+        description: project.description,
+        users: [{ id: authUser.id.toString(), email: authUser.email }],
+      },
+    ])
   })
 })

@@ -25,6 +25,12 @@ export default class ProjectsResolver {
     return null
   }
 
+  @Query()
+  @UseGuards(AuthGuard)
+  async projects(@AuthUser() user: UserEntity) {
+    return this.projectsService.findMany({ userIds: [user.id] })
+  }
+
   @Mutation()
   @UseGuards(AuthGuard)
   async createProject(@AuthUser() user: UserEntity, @Args('input') input: ProjectInput) {

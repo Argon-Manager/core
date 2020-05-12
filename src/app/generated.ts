@@ -14,6 +14,7 @@ export type Query = {
    __typename?: 'Query';
   me?: Maybe<User>;
   project?: Maybe<Project>;
+  projects?: Maybe<Array<Project>>;
 };
 
 
@@ -190,6 +191,7 @@ export type ResolversParentTypes = {
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>,
+  projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>,
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
