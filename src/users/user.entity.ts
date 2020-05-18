@@ -1,4 +1,11 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
 import ProjectToUserEntity from '../projects/project-to-user.entity'
 
 @Entity()
@@ -11,6 +18,12 @@ export default class UserEntity {
 
   @Column()
   passwordHash: string
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @DeleteDateColumn()
+  deletedAt?: Date
 
   @OneToMany(
     () => ProjectToUserEntity,

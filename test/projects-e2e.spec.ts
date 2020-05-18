@@ -252,4 +252,36 @@ describe('Project (e2e)', () => {
       },
     ])
   })
+
+  test('deleteProject: return deleted projects count', async () => {
+    const user = await usersService.create(usersMock[0])
+    const project = await projectsService.create({
+      ...projectsMock[0],
+      userIds: [user.id],
+    })
+    await projectsService.create({
+      ...projectsMock[1],
+      userIds: [user.id],
+    })
+
+    const notTeamUser = await usersService.create(usersMock[1])
+
+    const variables: QueryProjectArgs = { id: project.id.toString() }
+
+    const token = authService.createToken(notTeamUser.id)
+    const { body } = await request(app.getHttpServer())
+      .post('/')
+      .set({ Authorization: `Bearer ${token}` })
+      .send({
+        variables,
+        query: `
+          mutation DeleteProject($id: ID!) {
+            deleteProject(id: $id)
+          }
+        `,
+      })
+
+    expect(body.errors).toBeUndefined()
+    expect(body.data.deleteProject).toEqual(1)
+  })
 })

@@ -25,6 +25,7 @@ export type QueryProjectArgs = {
 export type Mutation = {
    __typename?: 'Mutation';
   createProject: Project;
+  deleteProject?: Maybe<Scalars['Int']>;
   login?: Maybe<Auth>;
   register: Auth;
   updateProject?: Maybe<Project>;
@@ -33,6 +34,11 @@ export type Mutation = {
 
 export type MutationCreateProjectArgs = {
   input: ProjectInput;
+};
+
+
+export type MutationDeleteProjectArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -165,6 +171,7 @@ export type ResolversTypes = {
   Query: ResolverTypeWrapper<{}>,
   ID: ResolverTypeWrapper<Scalars['ID']>,
   Mutation: ResolverTypeWrapper<{}>,
+  Int: ResolverTypeWrapper<Scalars['Int']>,
   Auth: ResolverTypeWrapper<Auth>,
   RegisterInput: RegisterInput,
   LoginInput: LoginInput,
@@ -180,6 +187,7 @@ export type ResolversParentTypes = {
   Query: {},
   ID: Scalars['ID'],
   Mutation: {},
+  Int: Scalars['Int'],
   Auth: Auth,
   RegisterInput: RegisterInput,
   LoginInput: LoginInput,
@@ -196,6 +204,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>,
+  deleteProject?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>,
   login?: Resolver<Maybe<ResolversTypes['Auth']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>,
   register?: Resolver<ResolversTypes['Auth'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
   updateProject?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<MutationUpdateProjectArgs, 'id' | 'input'>>,

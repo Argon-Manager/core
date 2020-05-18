@@ -1,6 +1,11 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
-import { MutationUpdateProjectArgs, ProjectInput, QueryProjectArgs } from '../app/generated'
+import {
+  MutationDeleteProjectArgs,
+  MutationUpdateProjectArgs,
+  ProjectInput,
+  QueryProjectArgs,
+} from '../app/generated'
 import { AuthGuard, AuthUser } from '../auth'
 import UserEntity from '../users/user.entity'
 import ProjectEntity from './project.entity'
@@ -51,6 +56,13 @@ export default class ProjectsResolver {
       ...input,
       userIds: [user.id, ...(input.userIds?.map((id) => parseInt(id)) ?? [])],
     })
+  }
+
+  @Mutation()
+  @UseGuards(AuthGuard)
+  async deleteProject(@AuthUser() user: UserEntity, @Args() { id }: MutationDeleteProjectArgs) {
+    // TODO: check owner
+    return this.projectsService.deleteById(parseInt(id))
   }
 
   @ResolveField()

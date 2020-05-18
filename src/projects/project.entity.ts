@@ -1,5 +1,12 @@
 import { ObjectType } from '@nestjs/graphql'
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm'
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm'
 import ProjectToUserEntity from './project-to-user.entity'
 
 @ObjectType('Project')
@@ -13,6 +20,12 @@ export default class ProjectEntity {
 
   @Column({ nullable: true })
   description?: string
+
+  @CreateDateColumn()
+  createdAt: Date
+
+  @DeleteDateColumn()
+  deletedAt?: Date
 
   @OneToMany(
     () => ProjectToUserEntity,

@@ -19,7 +19,6 @@ export default class ProjectsService {
     const project = await this.projectRepository.save(this.projectRepository.create(data))
 
     await this.addUsersToProject({ projectId: project.id, userIds: userIds })
-    // TODO: investigate how work 1)relation; 2)join
 
     return project
   }
@@ -77,5 +76,10 @@ export default class ProjectsService {
     const userIds = projectsToUsers.map(({ userId }) => userId)
 
     return this.usersService.find({ userIds })
+  }
+
+  async deleteById(id: number) {
+    const { affected } = await this.projectRepository.softDelete({ id })
+    return affected
   }
 }
