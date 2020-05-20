@@ -19,10 +19,9 @@ export default class ProjectsResolver {
   @UseGuards(AuthGuard)
   async project(@AuthUser() user: UserEntity, @Args() args: QueryProjectArgs) {
     const id = parseInt(args.id)
-    const project = await this.projectsService.findById(id)
 
     if (await this.projectsService.includesUser({ projectId: id, userId: user.id })) {
-      return project
+      return this.projectsService.findById(id)
     }
 
     return null
@@ -50,6 +49,7 @@ export default class ProjectsResolver {
     @Args() { input, id }: MutationUpdateProjectArgs
   ) {
     const projectId = parseInt(id)
+
     if (await this.projectsService.includesUser({ projectId, userId: user.id })) {
       return this.projectsService.updateById(parseInt(id), {
         ...input,
@@ -64,6 +64,7 @@ export default class ProjectsResolver {
   @UseGuards(AuthGuard)
   async deleteProject(@AuthUser() user: UserEntity, @Args() { id }: MutationDeleteProjectArgs) {
     const projectId = parseInt(id)
+
     if (await this.projectsService.includesUser({ projectId, userId: user.id })) {
       return this.projectsService.deleteById(projectId)
     }
