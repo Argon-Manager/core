@@ -18,12 +18,10 @@ export default class ProjectsResolver {
   @Query()
   @UseGuards(AuthGuard)
   async project(@AuthUser() user: UserEntity, @Args() args: QueryProjectArgs) {
-    // TODO: use parseInt decorator
     const id = parseInt(args.id)
     const project = await this.projectsService.findById(id)
-    const users = await this.projectsService.getProjectUsers({ projectId: id })
 
-    if (project && users.find(({ id }) => id === user.id)) {
+    if (await this.projectsService.includesUser({ projectId: id, userId: user.id })) {
       return project
     }
 
@@ -32,7 +30,7 @@ export default class ProjectsResolver {
 
   @Query()
   @UseGuards(AuthGuard)
-  async projects(@AuthUser() user: UserEntity) {
+  async authUserProjects(@AuthUser() user: UserEntity) {
     return this.projectsService.findMany({ userIds: [user.id] })
   }
 
@@ -51,22 +49,30 @@ export default class ProjectsResolver {
     @AuthUser() user: UserEntity,
     @Args() { input, id }: MutationUpdateProjectArgs
   ) {
-    // TODO: check owner
-    return this.projectsService.updateById(parseInt(id), {
-      ...input,
-      userIds: [user.id, ...(input.userIds?.map((id) => parseInt(id)) ?? [])],
-    })
+    const projectId = parseInt(id)
+    if (await this.projectsService.includesUser({ projectId, userId: user.id })) {
+      return this.projectsService.updateById(parseInt(id), {
+        ...input,
+        userIds: [user.id, ...(input.userIds?.map((id) => parseInt(id)) ?? [])],
+      })
+    }
+
+    return null
   }
 
   @Mutation()
   @UseGuards(AuthGuard)
   async deleteProject(@AuthUser() user: UserEntity, @Args() { id }: MutationDeleteProjectArgs) {
-    // TODO: check owner
-    return this.projectsService.deleteById(parseInt(id))
+    const projectId = parseInt(id)
+    if (await this.projectsService.includesUser({ projectId, userId: user.id })) {
+      return this.projectsService.deleteById(projectId)
+    }
+
+    return null
   }
 
   @ResolveField()
   async users(@Parent() { id }: ProjectEntity) {
-    return await this.projectsService.getProjectUsers({ projectId: id })
+    return await this.projectsService.getProjectUsersById(id)
   }
 }

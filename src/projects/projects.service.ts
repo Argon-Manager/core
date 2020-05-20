@@ -71,8 +71,8 @@ export default class ProjectsService {
     )
   }
 
-  async getProjectUsers({ projectId }: { projectId: number }) {
-    const projectsToUsers = await this.projectToUserRepository.find({ where: { projectId } })
+  async getProjectUsersById(id: number) {
+    const projectsToUsers = await this.projectToUserRepository.find({ where: { projectId: id } })
     const userIds = projectsToUsers.map(({ userId }) => userId)
 
     return this.usersService.find({ userIds })
@@ -81,5 +81,12 @@ export default class ProjectsService {
   async deleteById(id: number) {
     const { affected } = await this.projectRepository.softDelete({ id })
     return affected
+  }
+
+  async includesUser({ projectId, userId }: { projectId: number; userId: number }) {
+    const project = await this.findById(projectId)
+    const users = await this.getProjectUsersById(projectId)
+
+    return project && users.find(({ id }) => id === userId)
   }
 }
