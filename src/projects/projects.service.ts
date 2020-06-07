@@ -15,7 +15,7 @@ export default class ProjectsService {
     private usersService: UsersService
   ) {}
 
-  async create({ userIds, ...data }: Omit<ProjectInput, 'userIds'> & { userIds?: number[] }) {
+  async create({ userIds, ...data }: Omit<ProjectInput, 'userIds'> & { userIds: number[] }) {
     const project = await this.projectRepository.save(this.projectRepository.create(data))
 
     await this.addUsersToProject({ projectId: project.id, userIds: userIds })
@@ -47,7 +47,7 @@ export default class ProjectsService {
 
   async updateById(
     id: number,
-    { userIds, ...data }: Omit<ProjectInput, 'userIds'> & { userIds?: number[] }
+    { userIds, ...data }: Omit<ProjectInput, 'userIds'> & { userIds: number[] }
   ) {
     const project = await this.projectRepository.save(
       this.projectRepository.create({ id, ...data })
@@ -60,7 +60,6 @@ export default class ProjectsService {
   }
 
   async addUsersToProject({ userIds, projectId }: { userIds: number[]; projectId: number }) {
-    // TODO: replace by batch insert
     return this.projectToUserRepository.save(
       userIds.map((userId) =>
         this.projectToUserRepository.create({

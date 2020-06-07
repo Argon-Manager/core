@@ -7,6 +7,7 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
+import TaskEntity from '../tasks/task.entity'
 import ProjectToUserEntity from './project-to-user.entity'
 
 @ObjectType('Project')
@@ -32,4 +33,10 @@ export default class ProjectEntity {
     (projectToUser) => projectToUser.project
   )
   projectToUser: ProjectToUserEntity[]
+
+  @OneToMany(
+    () => TaskEntity,
+    (task) => task.project
+  )
+  tasks: TaskEntity[]
 }

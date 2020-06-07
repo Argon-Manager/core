@@ -15,7 +15,7 @@ import { projectsMock } from '../src/projects/test'
 import { UsersService } from '../src/users'
 import { usersMock } from '../src/users/test'
 
-describe('Project (e2e)', () => {
+describe('Projects (e2e)', () => {
   let app: INestApplication
 
   let usersService: UsersService

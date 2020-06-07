@@ -1,0 +1,20 @@
+type Mutation {
+  createTask(input: TaskInput!): Task
+}
+
+type Task {
+  id: ID!
+  name: String!
+  projectId: ID!
+  project: Project!
+  description: String
+  assignedId: ID
+  assigned: User
+}
+
+input TaskInput {
+  name: String!
+  projectId: ID!
+  description: String
+  assignedId: ID
+}

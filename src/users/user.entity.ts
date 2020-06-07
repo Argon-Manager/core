@@ -3,10 +3,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
 import ProjectToUserEntity from '../projects/project-to-user.entity'
+import TaskToAssignedEntity from '../tasks/task-to-assigned.entity'
+import TaskEntity from '../tasks/task.entity'
 
 @Entity()
 export default class UserEntity {
@@ -30,4 +33,10 @@ export default class UserEntity {
     (projectToUser) => projectToUser.user
   )
   projectToUser: ProjectToUserEntity[]
+
+  @OneToMany(
+    () => TaskEntity,
+    (task) => task.assigned
+  )
+  tasks: TaskEntity[]
 }

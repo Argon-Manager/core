@@ -12,9 +12,9 @@ export type Scalars = {
 
 export type Query = {
    __typename?: 'Query';
+  authUserProjects?: Maybe<Array<Project>>;
   me?: Maybe<User>;
   project?: Maybe<Project>;
-  projects?: Maybe<Array<Project>>;
 };
 
 
@@ -25,6 +25,7 @@ export type QueryProjectArgs = {
 export type Mutation = {
    __typename?: 'Mutation';
   createProject: Project;
+  createTask?: Maybe<Task>;
   deleteProject?: Maybe<Scalars['Int']>;
   login?: Maybe<Auth>;
   register: Auth;
@@ -34,6 +35,11 @@ export type Mutation = {
 
 export type MutationCreateProjectArgs = {
   input: ProjectInput;
+};
+
+
+export type MutationCreateTaskArgs = {
+  input: TaskInput;
 };
 
 
@@ -85,6 +91,24 @@ export type ProjectInput = {
   name: Scalars['String'];
   description?: Maybe<Scalars['String']>;
   userIds?: Maybe<Array<Scalars['ID']>>;
+};
+
+export type Task = {
+   __typename?: 'Task';
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  projectId: Scalars['ID'];
+  project: Project;
+  description?: Maybe<Scalars['String']>;
+  assignedId?: Maybe<Scalars['ID']>;
+  assigned?: Maybe<User>;
+};
+
+export type TaskInput = {
+  name: Scalars['String'];
+  projectId: Scalars['ID'];
+  description?: Maybe<Scalars['String']>;
+  assignedId?: Maybe<Scalars['ID']>;
 };
 
 export type User = {
@@ -177,6 +201,8 @@ export type ResolversTypes = {
   LoginInput: LoginInput,
   Project: ResolverTypeWrapper<Project>,
   ProjectInput: ProjectInput,
+  Task: ResolverTypeWrapper<Task>,
+  TaskInput: TaskInput,
   User: ResolverTypeWrapper<User>,
 };
 
@@ -193,17 +219,20 @@ export type ResolversParentTypes = {
   LoginInput: LoginInput,
   Project: Project,
   ProjectInput: ProjectInput,
+  Task: Task,
+  TaskInput: TaskInput,
   User: User,
 };
 
 export type QueryResolvers<ContextType = any, ParentType extends ResolversParentTypes['Query'] = ResolversParentTypes['Query']> = {
+  authUserProjects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>,
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>,
-  projects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>,
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {
   createProject?: Resolver<ResolversTypes['Project'], ParentType, ContextType, RequireFields<MutationCreateProjectArgs, 'input'>>,
+  createTask?: Resolver<Maybe<ResolversTypes['Task']>, ParentType, ContextType, RequireFields<MutationCreateTaskArgs, 'input'>>,
   deleteProject?: Resolver<Maybe<ResolversTypes['Int']>, ParentType, ContextType, RequireFields<MutationDeleteProjectArgs, 'id'>>,
   login?: Resolver<Maybe<ResolversTypes['Auth']>, ParentType, ContextType, RequireFields<MutationLoginArgs, 'input'>>,
   register?: Resolver<ResolversTypes['Auth'], ParentType, ContextType, RequireFields<MutationRegisterArgs, 'input'>>,
@@ -224,6 +253,17 @@ export type ProjectResolvers<ContextType = any, ParentType extends ResolversPare
   __isTypeOf?: isTypeOfResolverFn<ParentType>,
 };
 
+export type TaskResolvers<ContextType = any, ParentType extends ResolversParentTypes['Task'] = ResolversParentTypes['Task']> = {
+  id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  name?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
+  projectId?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
+  project?: Resolver<ResolversTypes['Project'], ParentType, ContextType>,
+  description?: Resolver<Maybe<ResolversTypes['String']>, ParentType, ContextType>,
+  assignedId?: Resolver<Maybe<ResolversTypes['ID']>, ParentType, ContextType>,
+  assigned?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
+  __isTypeOf?: isTypeOfResolverFn<ParentType>,
+};
+
 export type UserResolvers<ContextType = any, ParentType extends ResolversParentTypes['User'] = ResolversParentTypes['User']> = {
   id?: Resolver<ResolversTypes['ID'], ParentType, ContextType>,
   email?: Resolver<ResolversTypes['String'], ParentType, ContextType>,
@@ -235,6 +275,7 @@ export type Resolvers<ContextType = any> = {
   Mutation?: MutationResolvers<ContextType>,
   Auth?: AuthResolvers<ContextType>,
   Project?: ProjectResolvers<ContextType>,
+  Task?: TaskResolvers<ContextType>,
   User?: UserResolvers<ContextType>,
 };
 
