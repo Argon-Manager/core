@@ -1,3 +1,4 @@
+import { ObjectType } from '@nestjs/graphql'
 import {
   Column,
   CreateDateColumn,
@@ -10,6 +11,7 @@ import { User } from '../app/generated'
 import ProjectEntity from '../projects/project.entity'
 import UserEntity from '../users/user.entity'
 
+@ObjectType('Task')
 @Entity()
 export default class TaskEntity {
   @PrimaryGeneratedColumn()

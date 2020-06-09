@@ -14,6 +14,6 @@ import ProjectsService from './projects.service'
     UsersModule,
   ],
   providers: [ProjectsResolver, ProjectsService],
-  exports: [ProjectsResolver],
+  exports: [ProjectsResolver, ProjectsService],
 })
 export default class ProjectsModule {}
