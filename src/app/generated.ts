@@ -15,11 +15,17 @@ export type Query = {
   authUserProjects?: Maybe<Array<Project>>;
   me?: Maybe<User>;
   project?: Maybe<Project>;
+  tasks?: Maybe<Array<Task>>;
 };
 
 
 export type QueryProjectArgs = {
   id: Scalars['ID'];
+};
+
+
+export type QueryTasksArgs = {
+  projectId: Scalars['ID'];
 };
 
 export type Mutation = {
@@ -228,6 +234,7 @@ export type QueryResolvers<ContextType = any, ParentType extends ResolversParent
   authUserProjects?: Resolver<Maybe<Array<ResolversTypes['Project']>>, ParentType, ContextType>,
   me?: Resolver<Maybe<ResolversTypes['User']>, ParentType, ContextType>,
   project?: Resolver<Maybe<ResolversTypes['Project']>, ParentType, ContextType, RequireFields<QueryProjectArgs, 'id'>>,
+  tasks?: Resolver<Maybe<Array<ResolversTypes['Task']>>, ParentType, ContextType, RequireFields<QueryTasksArgs, 'projectId'>>,
 };
 
 export type MutationResolvers<ContextType = any, ParentType extends ResolversParentTypes['Mutation'] = ResolversParentTypes['Mutation']> = {

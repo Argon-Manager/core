@@ -1,6 +1,6 @@
 import { Injectable, UseGuards } from '@nestjs/common'
-import { Args, Mutation, ResolveField, Resolver, Root } from '@nestjs/graphql'
-import { TaskInput } from '../app/generated'
+import { Args, Mutation, ResolveField, Resolver, Root, Query } from '@nestjs/graphql'
+import { MutationCreateTaskArgs, QueryTasksArgs, TaskInput } from '../app/generated'
 import { AuthGuard, AuthUser } from '../auth'
 import ProjectsService from '../projects/projects.service'
 import UserEntity from '../users/user.entity'
@@ -16,7 +16,7 @@ export default class TasksResolver {
   @UseGuards(AuthGuard)
   async createTask(
     @AuthUser() user: UserEntity,
-    @Args('input') { assignedId, ...input }: TaskInput
+    @Args() { input: { assignedId, ...input } }: MutationCreateTaskArgs
   ) {
     // TODO: check if user belongs to project
     return this.tasksService.create({
@@ -25,9 +25,14 @@ export default class TasksResolver {
     })
   }
 
+  @Query()
+  @UseGuards(AuthGuard)
+  tasks(@AuthUser() user: UserEntity, @Args() { projectId }: QueryTasksArgs) {
+    return this.tasksService.findMany({ projectIds: [parseInt(projectId)] })
+  }
+
   @ResolveField()
   project(@Root() { projectId }: TaskEntity) {
-    console.log(projectId)
     return this.projectsService.findById(projectId)
   }
 }

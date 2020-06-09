@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { FindConditions, In, Repository } from 'typeorm'
 import { TaskInput } from '../app/generated'
 import TaskEntity from './task.entity'
 
@@ -10,5 +10,15 @@ export default class TasksService {
 
   async create(data: Omit<TaskInput, 'assignedId'> & { assignedId?: number }) {
     return this.taskRepository.save(this.taskRepository.create(data))
+  }
+
+  async findMany({ projectIds }: { projectIds?: number[] } = {}) {
+    const where: FindConditions<TaskEntity> = {}
+
+    if (projectIds) {
+      where.projectId = In(projectIds)
+    }
+
+    return this.taskRepository.find({ where })
   }
 }
