@@ -69,7 +69,7 @@ export default class ProjectsService {
     )
   }
 
-  async getProjectUsersById(id: number) {
+  async getUsersByProjectId(id: number) {
     const projectsToUsers = await this.projectToUserRepository.find({ where: { projectId: id } })
     const userIds = projectsToUsers.map(({ userId }) => userId)
 
@@ -83,7 +83,7 @@ export default class ProjectsService {
 
   async includesUser({ projectId, userId }: { projectId: number; userId: number }) {
     const project = await this.findById(projectId)
-    const users = await this.getProjectUsersById(projectId)
+    const users = await this.getUsersByProjectId(projectId)
 
     return project && users.find(({ id }) => id === userId)
   }

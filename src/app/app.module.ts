@@ -6,6 +6,7 @@ import { AuthModule } from '../auth'
 import { ProjectsModule } from '../projects'
 import { TasksModule } from '../tasks'
 import { UsersModule } from '../users'
+import { WorkspacesModule } from '../workspaces'
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { UsersModule } from '../users'
     UsersModule,
     ProjectsModule,
     TasksModule,
+    WorkspacesModule,
   ],
 })
 export default class AppModule {}

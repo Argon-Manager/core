@@ -1,0 +1,19 @@
+type Mutation {
+  createWorkspace(input: WorkspaceInput!): Workspace!
+}
+
+type Workspace {
+  id: ID!
+  name: String!
+  description: String
+  projectId: ID!
+  project: Project!
+  users: [User!]!
+}
+
+input WorkspaceInput {
+  name: String!
+  description: String
+  projectId: ID!
+  userIds: [ID!]
+}

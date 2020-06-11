@@ -74,6 +74,6 @@ export default class ProjectsResolver {
 
   @ResolveField()
   async users(@Parent() { id }: ProjectEntity) {
-    return await this.projectsService.getProjectUsersById(id)
+    return await this.projectsService.getUsersByProjectId(id)
   }
 }
