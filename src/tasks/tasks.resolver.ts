@@ -1,10 +1,9 @@
 import { Injectable, UseGuards } from '@nestjs/common'
-import { Args, Mutation, ResolveField, Resolver, Root, Query } from '@nestjs/graphql'
-import { MutationCreateTaskArgs, QueryTasksArgs, TaskInput } from '../app/generated'
+import { Args, Mutation, Query, ResolveField, Resolver, Root } from '@nestjs/graphql'
+import { MutationCreateTaskArgs, QueryTasksArgs } from '../app/generated'
 import { AuthGuard, AuthUser } from '../auth'
 import ProjectsService from '../projects/projects.service'
-import UserEntity from '../users/user.entity'
-import UsersService from '../users/users.service'
+import { UserEntity, UsersService } from '../users'
 import TaskEntity from './task.entity'
 import TasksService from './tasks.service'
 

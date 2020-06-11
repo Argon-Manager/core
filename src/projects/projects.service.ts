@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { FindConditions, In, Repository } from 'typeorm'
 import { ProjectInput } from '../app/generated'
-import UsersService from '../users/users.service'
+import { UsersService } from '../users'
 import ProjectToUserEntity from './project-to-user.entity'
 import ProjectEntity from './project.entity'
 
@@ -30,7 +30,6 @@ export default class ProjectsService {
   async findMany({ userIds }: { userIds?: number[] } = {}) {
     const where: FindConditions<ProjectEntity> = {}
 
-    // TODO: try with 1)join 2)relation
     if (userIds) {
       const projectsToUsers = await this.projectToUserRepository.find({
         where: { userId: In(userIds) },

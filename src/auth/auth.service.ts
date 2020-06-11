@@ -12,7 +12,6 @@ export default class AuthService {
 
   verifyToken(authorization: string) {
     const token = authorization.split(' ')[1]
-
     return verify(token, this.configService.get('JWT_KEY')!) as { id: number }
   }
 }
