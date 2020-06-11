@@ -1,6 +1,6 @@
 type Query {
   project(id: ID!): Project
-  authUserProjects: [Project!]
+  authUserProjects: [Project!]!
 }
 
 type Mutation {

@@ -4,24 +4,29 @@ import { MutationCreateTaskArgs, QueryTasksArgs, TaskInput } from '../app/genera
 import { AuthGuard, AuthUser } from '../auth'
 import ProjectsService from '../projects/projects.service'
 import UserEntity from '../users/user.entity'
+import UsersService from '../users/users.service'
 import TaskEntity from './task.entity'
 import TasksService from './tasks.service'
 
 @Injectable()
 @Resolver(() => TaskEntity)
 export default class TasksResolver {
-  constructor(private tasksService: TasksService, private projectsService: ProjectsService) {}
+  constructor(
+    private tasksService: TasksService,
+    private projectsService: ProjectsService,
+    private usersService: UsersService
+  ) {}
 
   @Mutation()
   @UseGuards(AuthGuard)
   async createTask(
     @AuthUser() user: UserEntity,
-    @Args() { input: { assignedId, ...input } }: MutationCreateTaskArgs
+    @Args() { input: { projectId, assignedId, ...input } }: MutationCreateTaskArgs
   ) {
-    // TODO: check if user belongs to project
     return this.tasksService.create({
       ...input,
       assignedId: assignedId ? parseInt(assignedId) : null,
+      projectId: parseInt(projectId),
     })
   }
 
@@ -34,5 +39,13 @@ export default class TasksResolver {
   @ResolveField()
   project(@Root() { projectId }: TaskEntity) {
     return this.projectsService.findById(projectId)
+  }
+
+  @ResolveField()
+  assigned(@Root() { assignedId }: TaskEntity) {
+    if (!assignedId) {
+      return null
+    }
+    return this.usersService.findOne({ id: assignedId })
   }
 }

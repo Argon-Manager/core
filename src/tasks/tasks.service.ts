@@ -8,7 +8,9 @@ import TaskEntity from './task.entity'
 export default class TasksService {
   constructor(@InjectRepository(TaskEntity) private taskRepository: Repository<TaskEntity>) {}
 
-  async create(data: Omit<TaskInput, 'assignedId'> & { assignedId?: number }) {
+  async create(
+    data: Omit<TaskInput, 'assignedId' | 'projectId'> & { assignedId?: number; projectId: number }
+  ) {
     return this.taskRepository.save(this.taskRepository.create(data))
   }
 

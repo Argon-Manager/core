@@ -1,9 +1,9 @@
 type Query {
-  tasks(projectId: ID!): [Task!]
+  tasks(projectId: ID!): [Task!]!
 }
 
 type Mutation {
-  createTask(input: TaskInput!): Task
+  createTask(input: TaskInput!): Task!
 }
 
 type Task {
