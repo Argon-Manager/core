@@ -21,6 +21,9 @@ export default class SprintEntity {
   @Column()
   name: string
 
+  @Column()
+  active: boolean
+
   @Column({ nullable: true })
   description?: string
 

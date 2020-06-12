@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
-import { Args, Mutation, ResolveField, Resolver, Root } from '@nestjs/graphql'
-import { MutationCreateSprintArgs } from '../app/generated'
+import { Args, Mutation, Query, ResolveField, Resolver, Root } from '@nestjs/graphql'
+import { MutationCreateSprintArgs, QuerySprintsArgs } from '../app/generated'
 import { AuthGuard, AuthUser } from '../auth'
 import { ProjectsService } from '../projects'
 import { UserEntity } from '../users'
@@ -23,6 +23,12 @@ export default class SprintsResolver {
       workspaceId: workspaceId ? parseInt(workspaceId) : null,
       userIds: [user.id, ...(userIds?.map((id) => parseInt(id)) ?? [])],
     })
+  }
+
+  @Query()
+  @UseGuards(AuthGuard)
+  sprints(@Args() { projectId }: QuerySprintsArgs) {
+    return this.sprintsService.findMany({ projectId: parseInt(projectId) })
   }
 
   @ResolveField()

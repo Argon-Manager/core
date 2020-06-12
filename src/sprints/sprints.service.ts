@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { FindConditions, Repository } from 'typeorm'
 import { SprintInput } from '../app/generated'
 import { UsersService } from '../users'
 import SprintToUserEntity from './sprint-to-user.entity'
@@ -28,6 +28,16 @@ export default class SprintsService {
     await this.addUsers({ userIds, sprintId: sprint.id })
 
     return sprint
+  }
+
+  findMany({ projectId }: { projectId?: number }) {
+    const where: FindConditions<SprintEntity> = {}
+
+    if (projectId) {
+      where.projectId = projectId
+    }
+
+    return this.sprintRepository.find({ where })
   }
 
   async addUsers({ userIds, sprintId }: { userIds: number[]; sprintId: number }) {

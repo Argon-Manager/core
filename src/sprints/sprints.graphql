@@ -1,3 +1,7 @@
+type Query {
+  sprints(projectId: ID!): [Sprint!]!
+}
+
 type Mutation {
   createSprint(input: SprintInput!): Sprint!
 }

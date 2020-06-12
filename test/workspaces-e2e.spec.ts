@@ -110,7 +110,7 @@ describe('Workspaces (e2e)', () => {
   })
 
   describe('Query: workspaces', () => {
-    test('return workspaces', async () => {
+    test('return workspaces by projectId', async () => {
       const authUser = await usersService.create(usersMock[0])
       const authUserProject = await projectsService.create({
         ...projectsMock[0],
