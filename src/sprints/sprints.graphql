@@ -1,5 +1,6 @@
 type Query {
   sprints(projectId: ID!): [Sprint!]!
+  sprint(id: ID!): Sprint
 }
 
 type Mutation {

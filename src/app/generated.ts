@@ -13,6 +13,7 @@ export type Query = {
   authUserProjects: Array<Project>
   me?: Maybe<User>
   project?: Maybe<Project>
+  sprint?: Maybe<Sprint>
   sprints: Array<Sprint>
   tasks: Array<Task>
   workspace?: Maybe<Workspace>
@@ -20,6 +21,10 @@ export type Query = {
 }
 
 export type QueryProjectArgs = {
+  id: Scalars['ID']
+}
+
+export type QuerySprintArgs = {
   id: Scalars['ID']
 }
 

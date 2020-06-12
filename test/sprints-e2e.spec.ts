@@ -3,7 +3,13 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { getConnection } from 'typeorm'
 import { AppModule } from '../src/app'
-import { MutationCreateSprintArgs, QueryWorkspacesArgs, SprintInput } from '../src/app/generated'
+import {
+  MutationCreateSprintArgs,
+  QuerySprintArgs,
+  QuerySprintsArgs,
+  QueryWorkspacesArgs,
+  SprintInput,
+} from '../src/app/generated'
 import { AuthService } from '../src/auth'
 import { ProjectsService } from '../src/projects'
 import { projectsMock } from '../src/projects/test'
@@ -114,6 +120,7 @@ describe('Sprints (e2e)', () => {
       })
     })
   })
+
   describe('Query: sprints', () => {
     test('return sprints by projectId', async () => {
       const authUser = await usersService.create(usersMock[0])
@@ -138,7 +145,7 @@ describe('Sprints (e2e)', () => {
         userIds: [secondUser.id],
       })
 
-      const variables: QueryWorkspacesArgs = { projectId: authUserProject.id.toString() }
+      const variables: QuerySprintsArgs = { projectId: authUserProject.id.toString() }
 
       const token = authService.createToken(authUser.id)
       const { body } = await request(app.getHttpServer())
@@ -193,6 +200,72 @@ describe('Sprints (e2e)', () => {
           },
         ])
       )
+    })
+  })
+
+  describe('Query: sprint', () => {
+    test('return sprints by id', async () => {
+      const user = await usersService.create(usersMock[0])
+      const project = await projectsService.create({
+        ...projectsMock[0],
+        userIds: [user.id],
+      })
+      const sprint = await sprintsService.create({
+        ...sprintsMock[0],
+        projectId: project.id,
+        userIds: [user.id],
+      })
+
+      const variables: QuerySprintArgs = { id: sprint.id.toString() }
+
+      const token = authService.createToken(user.id)
+      const { body } = await request(app.getHttpServer())
+        .post('/')
+        .set({ Authorization: `Bearer ${token}` })
+        .send({
+          variables,
+          query: `
+          query Sprint($id: ID!) {
+            sprint(id: $id) {
+              id
+              name
+              active
+              description
+              projectId
+              workspaceId
+              project {
+                id
+                name  
+              }
+              users {
+                id
+                email
+              }
+              workspace {
+                id
+                name
+              }
+            }
+          }
+        `,
+        })
+
+      expect(body.errors).toBeUndefined()
+      expect(body.data.sprint).toBeDefined()
+      expect(body.data.sprint).toEqual({
+        id: sprint.id.toString(),
+        name: sprint.name,
+        description: sprint.description,
+        active: sprint.active,
+        project: {
+          id: project.id.toString(),
+          name: project.name,
+        },
+        workspaceId: null,
+        workspace: null,
+        projectId: sprint.projectId.toString(),
+        users: [{ id: user.id.toString(), email: user.email }],
+      })
     })
   })
 })

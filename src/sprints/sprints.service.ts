@@ -40,6 +40,10 @@ export default class SprintsService {
     return this.sprintRepository.find({ where })
   }
 
+  findById(id: number) {
+    return this.sprintRepository.findOne({ id })
+  }
+
   async addUsers({ userIds, sprintId }: { userIds: number[]; sprintId: number }) {
     return this.sprintToUserRepository.save(
       userIds.map((userId) => ({
