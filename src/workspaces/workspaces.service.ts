@@ -43,6 +43,10 @@ export default class WorkspacesService {
     return this.workspaceRepository.find({ where })
   }
 
+  async findById(id: number) {
+    return this.workspaceRepository.findOne({ id })
+  }
+
   async addUsersToWorkspace({ userIds, workspaceId }: { userIds: number[]; workspaceId: number }) {
     return this.workspaceToUserRepository.save(
       userIds.map((userId) =>

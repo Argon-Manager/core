@@ -3,7 +3,11 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { getConnection } from 'typeorm'
 import { AppModule } from '../src/app'
-import { MutationCreateWorkspaceArgs, WorkspaceInput } from '../src/app/generated'
+import {
+  MutationCreateWorkspaceArgs,
+  QueryWorkspaceArgs,
+  WorkspaceInput,
+} from '../src/app/generated'
 import { AuthService } from '../src/auth'
 import { ProjectsService } from '../src/projects'
 import { projectsMock } from '../src/projects/test'
@@ -171,6 +175,63 @@ describe('Workspaces (e2e)', () => {
           },
         ])
       )
+    })
+  })
+
+  describe('Query: workspace', () => {
+    test('return workspace', async () => {
+      const user = await usersService.create(usersMock[0])
+      const project = await projectsService.create({
+        ...projectsMock[0],
+        userIds: [user.id],
+      })
+      const workspace = await workspacesService.create({
+        ...workspacesMock[0],
+        userIds: [user.id],
+        projectId: project.id,
+      })
+
+      const variables: QueryWorkspaceArgs = { id: workspace.id.toString() }
+
+      const token = authService.createToken(user.id)
+      const { body } = await request(app.getHttpServer())
+        .post('/')
+        .set({ Authorization: `Bearer ${token}` })
+        .send({
+          variables,
+          query: `
+          query Workspace($id: ID!) {
+            workspace(id: $id) {
+              id
+              name
+              description
+              projectId
+              project {
+                id
+                name  
+              }
+              users {
+                id
+                email
+              }
+            }
+          }
+        `,
+        })
+
+      expect(body.errors).toBeUndefined()
+      expect(body.data.workspace).toBeDefined()
+      expect(body.data.workspace).toEqual({
+        id: workspace.id.toString(),
+        name: workspace.name,
+        description: workspace.description,
+        project: {
+          id: project.id.toString(),
+          name: project.name,
+        },
+        projectId: project.id.toString(),
+        users: [{ id: user.id.toString(), email: user.email }],
+      })
     })
   })
 })
