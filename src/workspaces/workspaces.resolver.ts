@@ -1,6 +1,10 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, ResolveField, Resolver, Root, Query } from '@nestjs/graphql'
-import { MutationCreateWorkspaceArgs, QueryWorkspaceArgs } from '../app/generated'
+import {
+  MutationCreateWorkspaceArgs,
+  QueryWorkspaceArgs,
+  QueryWorkspacesArgs,
+} from '../app/generated'
 import { AuthGuard, AuthUser } from '../auth'
 import { ProjectsService } from '../projects'
 import { UserEntity } from '../users'
@@ -29,8 +33,8 @@ export default class WorkspacesResolver {
 
   @Query()
   @UseGuards(AuthGuard)
-  authUserWorkspaces(@AuthUser() user: UserEntity) {
-    return this.workspacesService.findMany({ userIds: [user.id] })
+  workspaces(@AuthUser() user: UserEntity, @Args() { projectId }: QueryWorkspacesArgs) {
+    return this.workspacesService.findMany({ projectId: parseInt(projectId) })
   }
 
   @Query()

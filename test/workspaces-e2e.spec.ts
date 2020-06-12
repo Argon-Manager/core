@@ -6,6 +6,7 @@ import { AppModule } from '../src/app'
 import {
   MutationCreateWorkspaceArgs,
   QueryWorkspaceArgs,
+  QueryWorkspacesArgs,
   WorkspaceInput,
 } from '../src/app/generated'
 import { AuthService } from '../src/auth'
@@ -108,8 +109,8 @@ describe('Workspaces (e2e)', () => {
     })
   })
 
-  describe('Query: authUserWorkspaces', () => {
-    test('return workspaces by auth user', async () => {
+  describe('Query: workspaces', () => {
+    test('return workspaces', async () => {
       const authUser = await usersService.create(usersMock[0])
       const authUserProject = await projectsService.create({
         ...projectsMock[0],
@@ -132,14 +133,17 @@ describe('Workspaces (e2e)', () => {
         projectId: secondUserProject.id,
       })
 
+      const variables: QueryWorkspacesArgs = { projectId: authUserProject.id.toString() }
+
       const token = authService.createToken(authUser.id)
       const { body } = await request(app.getHttpServer())
         .post('/')
         .set({ Authorization: `Bearer ${token}` })
         .send({
+          variables,
           query: `
-          query AuthUserWorkspaces {
-            authUserWorkspaces {
+          query Workspaces($projectId: ID!) {
+            workspaces(projectId: $projectId) {
               id
               name
               description
@@ -158,9 +162,9 @@ describe('Workspaces (e2e)', () => {
         })
 
       expect(body.errors).toBeUndefined()
-      expect(body.data.authUserWorkspaces).toBeDefined()
-      expect(body.data.authUserWorkspaces).toHaveLength(1)
-      expect(body.data.authUserWorkspaces).toEqual(
+      expect(body.data.workspaces).toBeDefined()
+      expect(body.data.workspaces).toHaveLength(1)
+      expect(body.data.workspaces).toEqual(
         expect.arrayContaining([
           {
             id: authUserProjectWorkspace.id.toString(),

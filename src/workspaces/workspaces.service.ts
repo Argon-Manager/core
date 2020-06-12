@@ -26,7 +26,7 @@ export default class WorkspacesService {
     return workspace
   }
 
-  async findMany({ userIds }: { userIds?: number[] }) {
+  async findMany({ userIds, projectId }: { userIds?: number[]; projectId?: number }) {
     const where: FindConditions<WorkspaceEntity> = {}
 
     if (userIds) {
@@ -38,6 +38,10 @@ export default class WorkspacesService {
       if (workspaceIds.length) {
         where.id = In(workspaceIds)
       }
+    }
+
+    if (projectId) {
+      where.projectId = projectId
     }
 
     return this.workspaceRepository.find({ where })

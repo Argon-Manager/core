@@ -1,5 +1,5 @@
 type Query {
-  authUserWorkspaces: [Workspace!]!
+  workspaces(projectId: ID!): [Workspace!]!
   workspace(id: ID!): Workspace
 }
 

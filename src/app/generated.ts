@@ -11,11 +11,11 @@ export type Scalars = {
 export type Query = {
   __typename?: 'Query'
   authUserProjects: Array<Project>
-  authUserWorkspaces: Array<Workspace>
   me?: Maybe<User>
   project?: Maybe<Project>
   tasks: Array<Task>
   workspace?: Maybe<Workspace>
+  workspaces: Array<Workspace>
 }
 
 export type QueryProjectArgs = {
@@ -28,6 +28,10 @@ export type QueryTasksArgs = {
 
 export type QueryWorkspaceArgs = {
   id: Scalars['ID']
+}
+
+export type QueryWorkspacesArgs = {
+  projectId: Scalars['ID']
 }
 
 export type Mutation = {
