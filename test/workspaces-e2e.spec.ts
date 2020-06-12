@@ -10,6 +10,7 @@ import { projectsMock } from '../src/projects/test'
 import { UsersService } from '../src/users'
 import { usersMock } from '../src/users/test'
 import { workspacesMock } from '../src/workspaces/test'
+import WorkspacesService from '../src/workspaces/workspaces.service'
 
 describe('Workspaces (e2e)', () => {
   let app: INestApplication
@@ -17,6 +18,7 @@ describe('Workspaces (e2e)', () => {
   let usersService: UsersService
   let authService: AuthService
   let projectsService: ProjectsService
+  let workspacesService: WorkspacesService
 
   beforeAll(async () => {
     const moduleRef = await Test.createTestingModule({
@@ -29,6 +31,7 @@ describe('Workspaces (e2e)', () => {
     usersService = moduleRef.get(UsersService)
     authService = moduleRef.get(AuthService)
     projectsService = moduleRef.get(ProjectsService)
+    workspacesService = moduleRef.get(WorkspacesService)
   })
 
   beforeEach(async () => {
@@ -98,6 +101,76 @@ describe('Workspaces (e2e)', () => {
         projectId: input.projectId,
         users: [{ id: user.id.toString(), email: user.email }],
       })
+    })
+  })
+
+  describe('Query: authUserWorkspaces', () => {
+    test('return workspaces by auth user', async () => {
+      const authUser = await usersService.create(usersMock[0])
+      const authUserProject = await projectsService.create({
+        ...projectsMock[0],
+        userIds: [authUser.id],
+      })
+      const authUserProjectWorkspace = await workspacesService.create({
+        ...workspacesMock[0],
+        userIds: [authUser.id],
+        projectId: authUserProject.id,
+      })
+
+      const secondUser = await usersService.create(usersMock[1])
+      const secondUserProject = await projectsService.create({
+        ...projectsMock[1],
+        userIds: [secondUser.id],
+      })
+      const secondUserProjectWorkspace = await workspacesService.create({
+        ...workspacesMock[1],
+        userIds: [secondUser.id],
+        projectId: secondUserProject.id,
+      })
+
+      const token = authService.createToken(authUser.id)
+      const { body } = await request(app.getHttpServer())
+        .post('/')
+        .set({ Authorization: `Bearer ${token}` })
+        .send({
+          query: `
+          query AuthUserWorkspaces {
+            authUserWorkspaces {
+              id
+              name
+              description
+              projectId
+              project {
+                id
+                name  
+              }
+              users {
+                id
+                email
+              }
+            }
+          }
+        `,
+        })
+
+      expect(body.errors).toBeUndefined()
+      expect(body.data.authUserWorkspaces).toBeDefined()
+      expect(body.data.authUserWorkspaces).toHaveLength(1)
+      expect(body.data.authUserWorkspaces).toEqual(
+        expect.arrayContaining([
+          {
+            id: authUserProjectWorkspace.id.toString(),
+            name: authUserProjectWorkspace.name,
+            description: authUserProjectWorkspace.description,
+            project: {
+              id: authUserProject.id.toString(),
+              name: authUserProject.name,
+            },
+            projectId: authUserProject.id.toString(),
+            users: [{ id: authUser.id.toString(), email: authUser.email }],
+          },
+        ])
+      )
     })
   })
 })

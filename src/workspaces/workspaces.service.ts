@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { FindConditions, In, Repository } from 'typeorm'
 import { WorkspaceInput } from '../app/generated'
 import { UsersService } from '../users'
 import WorkspaceToUserEntity from './workspace-to-user.entity'
@@ -24,6 +24,23 @@ export default class WorkspacesService {
     await this.addUsersToWorkspace({ userIds, workspaceId: workspace.id })
 
     return workspace
+  }
+
+  async findMany({ userIds }: { userIds?: number[] }) {
+    const where: FindConditions<WorkspaceEntity> = {}
+
+    if (userIds) {
+      const workspacesToUsers = await this.workspaceToUserRepository.find({
+        where: { userId: In(userIds) },
+      })
+      const workspaceIds = workspacesToUsers.map(({ workspaceId }) => workspaceId)
+
+      if (workspaceIds.length) {
+        where.id = In(workspaceIds)
+      }
+    }
+
+    return this.workspaceRepository.find({ where })
   }
 
   async addUsersToWorkspace({ userIds, workspaceId }: { userIds: number[]; workspaceId: number }) {
