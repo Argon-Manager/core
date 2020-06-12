@@ -1,0 +1,25 @@
+type Mutation {
+  createSprint(input: SprintInput!): Sprint!
+}
+
+type Sprint {
+  id: ID!
+  name: String!
+  description: String
+  active: Boolean!
+  projectId: ID!
+  project: Project!
+  workspaceId: ID
+  workspace: Workspace
+  tasks: [Task!]!
+  users: [User!]!
+}
+
+input SprintInput {
+  name: String!
+  description: String
+  active: Boolean!
+  projectId: ID!
+  workspaceId: ID
+  userIds: [ID!]
+}

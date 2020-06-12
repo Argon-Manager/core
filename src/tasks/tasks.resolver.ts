@@ -2,7 +2,7 @@ import { Injectable, UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, ResolveField, Resolver, Root } from '@nestjs/graphql'
 import { MutationCreateTaskArgs, QueryTasksArgs } from '../app/generated'
 import { AuthGuard, AuthUser } from '../auth'
-import ProjectsService from '../projects/projects.service'
+import { ProjectsService } from '../projects'
 import { UserEntity, UsersService } from '../users'
 import TaskEntity from './task.entity'
 import TasksService from './tasks.service'
@@ -20,10 +20,10 @@ export default class TasksResolver {
   @UseGuards(AuthGuard)
   async createTask(
     @AuthUser() user: UserEntity,
-    @Args() { input: { projectId, assignedId, ...input } }: MutationCreateTaskArgs
+    @Args() { input: { projectId, assignedId, ...restInput } }: MutationCreateTaskArgs
   ) {
     return this.tasksService.create({
-      ...input,
+      ...restInput,
       assignedId: assignedId ? parseInt(assignedId) : null,
       projectId: parseInt(projectId),
     })

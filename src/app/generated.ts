@@ -27,6 +27,7 @@ export type QueryTasksArgs = {
 export type Mutation = {
   __typename?: 'Mutation'
   createProject: Project
+  createSprint: Sprint
   createTask: Task
   createWorkspace: Workspace
   deleteProject?: Maybe<Scalars['Int']>
@@ -37,6 +38,10 @@ export type Mutation = {
 
 export type MutationCreateProjectArgs = {
   input: ProjectInput
+}
+
+export type MutationCreateSprintArgs = {
+  input: SprintInput
 }
 
 export type MutationCreateTaskArgs = {
@@ -85,12 +90,35 @@ export type Project = {
   id: Scalars['ID']
   name: Scalars['String']
   description?: Maybe<Scalars['String']>
-  users: Array<Maybe<User>>
+  users: Array<User>
 }
 
 export type ProjectInput = {
   name: Scalars['String']
   description?: Maybe<Scalars['String']>
+  userIds?: Maybe<Array<Scalars['ID']>>
+}
+
+export type Sprint = {
+  __typename?: 'Sprint'
+  id: Scalars['ID']
+  name: Scalars['String']
+  description?: Maybe<Scalars['String']>
+  active: Scalars['Boolean']
+  projectId: Scalars['ID']
+  project: Project
+  workspaceId?: Maybe<Scalars['ID']>
+  workspace?: Maybe<Workspace>
+  tasks: Array<Task>
+  users: Array<User>
+}
+
+export type SprintInput = {
+  name: Scalars['String']
+  description?: Maybe<Scalars['String']>
+  active: Scalars['Boolean']
+  projectId: Scalars['ID']
+  workspaceId?: Maybe<Scalars['ID']>
   userIds?: Maybe<Array<Scalars['ID']>>
 }
 

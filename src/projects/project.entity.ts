@@ -7,7 +7,9 @@ import {
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
+import SprintEntity from '../sprints/sprint.entity'
 import TaskEntity from '../tasks/task.entity'
+import WorkspaceEntity from '../workspaces/workspace.entity'
 import ProjectToUserEntity from './project-to-user.entity'
 
 @ObjectType('Project')
@@ -33,6 +35,18 @@ export default class ProjectEntity {
     (projectToUser) => projectToUser.project
   )
   projectToUser: ProjectToUserEntity[]
+
+  @OneToMany(
+    () => WorkspaceEntity,
+    (workspace) => workspace.project
+  )
+  workspace: WorkspaceEntity[]
+
+  @OneToMany(
+    () => SprintEntity,
+    (sprint) => sprint.project
+  )
+  sprints: SprintEntity[]
 
   @OneToMany(
     () => TaskEntity,

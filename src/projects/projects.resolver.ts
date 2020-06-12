@@ -1,9 +1,9 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Parent, Query, ResolveField, Resolver } from '@nestjs/graphql'
 import {
+  MutationCreateProjectArgs,
   MutationDeleteProjectArgs,
   MutationUpdateProjectArgs,
-  ProjectInput,
   QueryProjectArgs,
 } from '../app/generated'
 import { AuthGuard, AuthUser } from '../auth'
@@ -35,10 +35,13 @@ export default class ProjectsResolver {
 
   @Mutation()
   @UseGuards(AuthGuard)
-  async createProject(@AuthUser() user: UserEntity, @Args('input') input: ProjectInput) {
+  async createProject(
+    @AuthUser() user: UserEntity,
+    @Args() { input: { userIds, ...restInput } }: MutationCreateProjectArgs
+  ) {
     return this.projectsService.create({
-      ...input,
-      userIds: [user.id, ...(input.userIds?.map((id) => parseInt(id)) ?? [])],
+      ...restInput,
+      userIds: [user.id, ...(userIds?.map((id) => parseInt(id)) ?? [])],
     })
   }
 
@@ -46,14 +49,14 @@ export default class ProjectsResolver {
   @UseGuards(AuthGuard)
   async updateProject(
     @AuthUser() user: UserEntity,
-    @Args() { input, id }: MutationUpdateProjectArgs
+    @Args() { input: { userIds, ...restInput }, id }: MutationUpdateProjectArgs
   ) {
     const projectId = parseInt(id)
 
     if (await this.projectsService.includesUser({ projectId, userId: user.id })) {
       return this.projectsService.updateById(parseInt(id), {
-        ...input,
-        userIds: [user.id, ...(input.userIds?.map((id) => parseInt(id)) ?? [])],
+        ...restInput,
+        userIds: [user.id, ...(userIds?.map((id) => parseInt(id)) ?? [])],
       })
     }
 

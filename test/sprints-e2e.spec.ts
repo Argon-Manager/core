@@ -3,15 +3,15 @@ import { Test } from '@nestjs/testing'
 import request from 'supertest'
 import { getConnection } from 'typeorm'
 import { AppModule } from '../src/app'
-import { MutationCreateWorkspaceArgs, WorkspaceInput } from '../src/app/generated'
+import { MutationCreateSprintArgs, SprintInput } from '../src/app/generated'
 import { AuthService } from '../src/auth'
 import { ProjectsService } from '../src/projects'
 import { projectsMock } from '../src/projects/test'
+import { sprintsMock } from '../src/sprints/test'
 import { UsersService } from '../src/users'
 import { usersMock } from '../src/users/test'
-import { workspacesMock } from '../src/workspaces/test'
 
-describe('Workspaces (e2e)', () => {
+describe('Sprints (e2e)', () => {
   let app: INestApplication
 
   let usersService: UsersService
@@ -44,8 +44,8 @@ describe('Workspaces (e2e)', () => {
     await getConnection().close()
   })
 
-  describe('Mutation: createWorkspace', () => {
-    test('return new workspace', async () => {
+  describe('Mutation: createSprint', () => {
+    test('return new sprint', async () => {
       const user = await usersService.create(usersMock[0])
 
       const project = await projectsService.create({
@@ -53,11 +53,11 @@ describe('Workspaces (e2e)', () => {
         userIds: [user.id],
       })
 
-      const input: WorkspaceInput = {
-        ...workspacesMock[0],
+      const input: SprintInput = {
+        ...sprintsMock[0],
         projectId: project.id.toString(),
       }
-      const variables: MutationCreateWorkspaceArgs = { input }
+      const variables: MutationCreateSprintArgs = { input }
 
       const token = authService.createToken(user.id)
       const { body } = await request(app.getHttpServer())
@@ -66,12 +66,14 @@ describe('Workspaces (e2e)', () => {
         .send({
           variables,
           query: `
-          mutation CreateWorkspace($input: WorkspaceInput!) {
-            createWorkspace(input: $input) {
+          mutation CreateSprint($input: SprintInput!) {
+            createSprint(input: $input) {
               id
               name
+              active
               description
               projectId
+              workspaceId
               project {
                 id
                 name  
@@ -80,21 +82,28 @@ describe('Workspaces (e2e)', () => {
                 id
                 email
               }
+              workspace {
+                id
+                name
+              }
             }
           }
         `,
         })
 
       expect(body.errors).toBeUndefined()
-      expect(body.data.createWorkspace).toBeDefined()
-      expect(body.data.createWorkspace).toEqual({
+      expect(body.data.createSprint).toBeDefined()
+      expect(body.data.createSprint).toEqual({
         id: expect.any(String),
         name: input.name,
         description: input.description,
+        active: input.active,
         project: {
           id: project.id.toString(),
           name: project.name,
         },
+        workspaceId: null,
+        workspace: null,
         projectId: input.projectId,
         users: [{ id: user.id.toString(), email: user.email }],
       })

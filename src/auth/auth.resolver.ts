@@ -1,6 +1,6 @@
 import { UseGuards } from '@nestjs/common'
 import { Args, Mutation, Query, Resolver } from '@nestjs/graphql'
-import { LoginInput, RegisterInput } from '../app/generated'
+import { MutationLoginArgs, MutationRegisterArgs } from '../app/generated'
 import { UsersService } from '../users'
 import UserEntity from '../users/user.entity'
 import AuthUser from './auth-user'
@@ -18,7 +18,7 @@ export default class AuthResolver {
   }
 
   @Mutation()
-  async register(@Args('input') input: RegisterInput) {
+  async register(@Args() { input }: MutationRegisterArgs) {
     const user = await this.usersService.create(input)
 
     return {
@@ -28,7 +28,7 @@ export default class AuthResolver {
   }
 
   @Mutation()
-  async login(@Args('input') { email, password }: LoginInput) {
+  async login(@Args() { input: { email, password } }: MutationLoginArgs) {
     const user = await this.usersService.findOne({ email })
 
     if (!user) {

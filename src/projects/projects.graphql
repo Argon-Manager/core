@@ -13,7 +13,7 @@ type Project {
   id: ID!
   name: String!
   description: String
-  users: [User]!
+  users: [User!]!
 }
 
 input ProjectInput {

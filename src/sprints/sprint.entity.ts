@@ -5,16 +5,16 @@ import {
   DeleteDateColumn,
   Entity,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm'
-import { User } from '../app/generated'
 import ProjectEntity from '../projects/project.entity'
-import SprintEntity from '../sprints/sprint.entity'
-import UserEntity from '../users/user.entity'
+import TaskEntity from '../tasks/task.entity'
+import SprintToUserEntity from './sprint-to-user.entity'
 
-@ObjectType('Task')
-@Entity()
-export default class TaskEntity {
+@ObjectType('Sprint')
+@Entity('sprint')
+export default class SprintEntity {
   @PrimaryGeneratedColumn()
   id: number
 
@@ -30,14 +30,17 @@ export default class TaskEntity {
   @DeleteDateColumn()
   deletedAt?: Date
 
-  @Column({ nullable: true })
-  assignedId?: number
-
-  @ManyToOne(
-    () => UserEntity,
-    (user) => user.tasks
+  @OneToMany(
+    () => SprintToUserEntity,
+    (sprintToUser) => sprintToUser.sprint
   )
-  assigned?: User
+  sprintToUser: SprintToUserEntity[]
+
+  @OneToMany(
+    () => TaskEntity,
+    (task) => task.sprint
+  )
+  tasks: TaskEntity[]
 
   @Column()
   projectId: number
@@ -47,13 +50,4 @@ export default class TaskEntity {
     (project) => project.tasks
   )
   project: ProjectEntity
-
-  @Column({ nullable: true })
-  sprintId?: number
-
-  @ManyToOne(
-    () => SprintEntity,
-    (sprint) => sprint.tasks
-  )
-  sprint?: SprintEntity
 }

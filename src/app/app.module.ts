@@ -4,6 +4,7 @@ import { GraphQLModule } from '@nestjs/graphql'
 import { TypeOrmModule } from '@nestjs/typeorm'
 import { AuthModule } from '../auth'
 import { ProjectsModule } from '../projects'
+import { SprintsModule } from '../sprints'
 import { TasksModule } from '../tasks'
 import { UsersModule } from '../users'
 import { WorkspacesModule } from '../workspaces'
@@ -36,6 +37,7 @@ import { WorkspacesModule } from '../workspaces'
     ProjectsModule,
     TasksModule,
     WorkspacesModule,
+    SprintsModule,
   ],
 })
 export default class AppModule {}

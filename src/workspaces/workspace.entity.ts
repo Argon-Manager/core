@@ -14,7 +14,7 @@ import TaskEntity from '../tasks/task.entity'
 import WorkspaceToUserEntity from './workspace-to-user.entity'
 
 @ObjectType('Workspace')
-@Entity()
+@Entity('workspace')
 export default class WorkspaceEntity {
   @PrimaryGeneratedColumn()
   id: number

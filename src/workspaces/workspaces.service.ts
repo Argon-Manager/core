@@ -15,7 +15,10 @@ export default class WorkspacesService {
     private usersService: UsersService
   ) {}
 
-  async create({ userIds, ...data }: Omit<WorkspaceInput, 'userIds'> & { userIds: number[] }) {
+  async create({
+    userIds,
+    ...data
+  }: Omit<WorkspaceInput, 'userIds' | 'projectId'> & { userIds: number[]; projectId: number }) {
     const workspace = await this.workspaceRepository.save(this.workspaceRepository.create(data))
 
     await this.addUsersToWorkspace({ userIds, workspaceId: workspace.id })
